@@ -24,7 +24,7 @@ void handleClient(int client_socket) {
     const char* pong_message = "pong";
 
     while (true) {
-        memset(buffer, 0, BUFFER_SIZE);
+        memset(buffer, 0, BUFFER_SIZE); // Очищаем буфер
         int valread = read(client_socket, buffer, BUFFER_SIZE);
 
         if (valread <= 0) {
@@ -33,30 +33,32 @@ void handleClient(int client_socket) {
             break;
         }
 
-        std::string client_message(buffer);
+        std::string client_message(buffer, valread);
+        client_message.erase(client_message.find_last_not_of("\r\n") + 1);
 
-        {
-            std::lock_guard<std::mutex> lock(historyMutex);
-            messageHistory.push_back("Client: " + client_message);
+        if (client_message.empty()) {
+            continue;
         }
 
         std::cout << "Получено: " << client_message << std::endl;
 
         if (client_message == "ping") {
+            {
+                std::lock_guard<std::mutex> lock(historyMutex);
+                messageHistory.push_back("You: ping");
+                messageHistory.push_back("Server: pong");
+            }
             send(client_socket, pong_message, strlen(pong_message), 0);
             std::cout << "Отправлено: pong" << std::endl;
 
-            {
-                std::lock_guard<std::mutex> lock(historyMutex);
-                messageHistory.push_back("Server: pong");
-            }
         } else if (client_message == "exit") {
             std::cout << "Клиент запросил отключение. Закрытие соединения." << std::endl;
             break;
+
         } else if (client_message == "history") {
             std::cout << "Клиент запросил историю сообщений." << std::endl;
 
-            std::string history;
+            std::string history = "Show History...\n";
             {
                 std::lock_guard<std::mutex> lock(historyMutex);
                 for (const auto& entry : messageHistory) {
@@ -65,20 +67,24 @@ void handleClient(int client_socket) {
             }
 
             send(client_socket, history.c_str(), history.size(), 0);
-        } else {
+        }
+        else {
             std::cerr << "Неизвестное сообщение: " << client_message << std::endl;
             std::string response = "Unknown command: " + client_message;
-            send(client_socket, response.c_str(), response.size(), 0);
 
             {
                 std::lock_guard<std::mutex> lock(historyMutex);
-                messageHistory.push_back("Server: " + response);
+                messageHistory.push_back("You: " + client_message);  // Сохраняем запрос клиента
+                messageHistory.push_back("Server: " + response);    // Сохраняем ответ сервера
             }
+
+            send(client_socket, response.c_str(), response.size(), 0);
         }
     }
 
     close(client_socket);
 }
+
 
 int main() {
     int server_fd;

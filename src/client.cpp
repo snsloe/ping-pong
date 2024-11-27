@@ -18,7 +18,7 @@ void handleError(const char* message) {
 void saveHistory(const std::vector<std::string>& history) {
     FILE* file = fopen("chat_history.txt", "w");
     if (!file) {
-        std::cerr << "Не удалось сохранить историю переписки." << std::endl;
+        std::cerr << "пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ." << std::endl;
         return;
     }
 
@@ -27,7 +27,7 @@ void saveHistory(const std::vector<std::string>& history) {
     }
 
     fclose(file);
-    std::cout << "История переписки сохранена в 'chat_history.txt'." << std::endl;
+    std::cout << "'chat_history.txt'." << std::endl;
 }
 
 int main() {
@@ -36,7 +36,7 @@ int main() {
     char buffer[BUFFER_SIZE] = { 0 };
     std::vector<std::string> history;
 
-    // Создание сокета
+    // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
     if ((sock = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
         handleError("Socket creation failed");
     }
@@ -48,7 +48,7 @@ int main() {
         handleError("Invalid address or address not supported");
     }
 
-    // Подключение к серваку
+    // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
     if (connect(sock, (struct sockaddr*)&server_address, sizeof(server_address)) < 0) {
         handleError("Connection to the server failed");
     }
@@ -68,7 +68,6 @@ int main() {
             break;
         }
 
-        // Чтение ответа от сервера
         memset(buffer, 0, BUFFER_SIZE);
         int valread = read(sock, buffer, BUFFER_SIZE);
 
@@ -77,12 +76,6 @@ int main() {
             std::cout << "Server: " << server_response << "\n";
 
             history.push_back("Server: " + server_response);
-
-            // Истрория выводится построчноо
-            if (client_message == "history") {
-                std::cout << "Chat History:\n";
-                std::cout << server_response;
-            }
         }
         else if (valread == 0) {
             std::cout << "Server disconnected.\n";

@@ -1,7 +1,0 @@
-You: ping
-Server: pong
-You: oi
-Server: Unknown command: oi
-You: ping
-Server: pong
-You: 
