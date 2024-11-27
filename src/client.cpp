@@ -18,7 +18,7 @@ void handleError(const char* message) {
 void saveHistory(const std::vector<std::string>& history) {
     FILE* file = fopen("chat_history.txt", "w");
     if (!file) {
-        std::cerr << "�� ������� ��������� ������� ���������." << std::endl;
+        std::cerr << "Не удалось сохранить историю переписки." << std::endl;
         return;
     }
 
@@ -36,7 +36,7 @@ int main() {
     char buffer[BUFFER_SIZE] = { 0 };
     std::vector<std::string> history;
 
-    // �������� ������
+    // Создание сокета
     if ((sock = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
         handleError("Socket creation failed");
     }
@@ -48,7 +48,7 @@ int main() {
         handleError("Invalid address or address not supported");
     }
 
-    // ����������� � �������
+    // Подключение к серверу
     if (connect(sock, (struct sockaddr*)&server_address, sizeof(server_address)) < 0) {
         handleError("Connection to the server failed");
     }
